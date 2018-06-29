@@ -125,7 +125,7 @@ for adj in adjs:                                # Step 2 遍历list adjs中的�
                     syns.update(((adj, l.name()),))  # Step 5 将单词及其在文章中出现的同义词存入syns4. SpaCySpacy 是一款由Python和Cython写出来的开源库，用于处理NLP任务。相较于NLTK，SpaCy更多应用于工业界。
 在之前的任务中，nltk的pos_tag可以为文章中的单词标注词性。现在我们用Spacy尝试将单词在句子中的成分标注出来。
 
-问题：标出文章中所有句子的root verb。#思维步骤：
+问题：标出文章中所有句子的root verb（谓语动词）#思维步骤：
 1. 引入库
 2. 加载en_core_web_sm模型
 3. 调取文本
@@ -136,46 +136,82 @@ file_adjs = open('/Users/jasmine/Desktop/Python_Text_Mining/text_adjs.txt', 'r')
 text_adjs = file_adjs.read()
 doc = nlp(text_adjs)                                                              # Step 4 遍历每句，引入方法sentence.root 
 for sentence in doc.sents:
-    print(sentence, sentence.root)### 可视化5. textstat
-# 阅读难易度分析 readability | 问题：一篇未知的经济学人文章，难度如何，和某篇托福文章比较
-import nltk
+    print(sentence, sentence.root)### 可视化5. textstat# textstat 是一款简单好用的文本分析工具，我们可以调用flesch_reading_ease对阅读难易度（readability）分析 问题：特朗普和奥巴马的推文，谁的语言更简单？import nltk
 from nltk.tokenize import word_tokenize,sent_tokenize
 from textstat.textstat import textstat
+trump_diff = []
+obama_diff = []
+file_trump = open('/Users/jasmine/Desktop/Python_Text_Mining/trump_twi.txt', 'r')
+trump_twi = file_trump.read()
+trump_sent = sent_tokenize(trump_twi)
+for sent in trump_sent:
+    trump_diff.append(textstat.flesch_reading_ease(sent))
+    
+file_obama = open('/Users/jasmine/Desktop/Python_Text_Mining/obama_twi.txt', 'r')
+obama_twi = file_obama.read()
+obama_sent = sent_tokenize(obama_twi)
+for sent in obama_sent:
+    obama_diff.append(textstat.flesch_reading_ease(sent))
+    
+print (trump_diff,obama_diff)
 
-file = open('/Users/jasmine/Desktop/the_little_prince.txt', 'r')
-text = file.read()
-text_sent = sent_tokenize(text)
-for sent in text_sent:
-    print (textstat.flesch_reading_ease(sent))
-    print(sent)
+# In[2]:
 
-### 可视化6. textblob
-# 先看一下文本 情感分析 | 一篇GRE阅读的观点走向
-import nltk
+
+### 可视化
+
+6. textblobtextblob建立在NLTK和Pattern基础之上，对于刚接触NLP的新手来说，非常友好。
+可以做sentiment analysis, pos-tagging, noun phrase extraction问题：对Trump和Obama的推文做情感分析import nltk
 from nltk.tokenize import word_tokenize,sent_tokenize
 from textblob import TextBlob
 
-file = open('/Users/jasmine/Desktop/the_little_prince.txt', 'r')
-text = file.read()
-text_sent = sent_tokenize(text)
-for sent in text_sent:
+file_trump = open('/Users/jasmine/Desktop/Python_Text_Mining/trump_twi.txt', 'r')
+trump_twi = file_trump.read()
+trump_sent = sent_tokenize(trump_twi)
+trump_senti = []
+obama_senti =[]
+for sent in trump_sent:
     sent_senti = TextBlob(sent)
-    print(sent,sent_senti.sentiment.polarity)
-### 可视化7. nltk (corpus.cmudict.dict())
-# 音节音素分析 | 一首流行歌曲，每句结尾的单词，哪些押韵
-import nltk
-from nltk.tokenize import word_tokenize,sent_tokenize
-entries = nltk.corpus.cmudict.entries()
-prondict = nltk.corpus.cmudict.dict()
-file = open('/Users/jasmine/Desktop/trouble.txt', 'r')
-text = file.read()
-text_sent = sent_tokenize(text)
-for line in text_sent:
-    word = word_tokenize(line)
-    for w in word:
-        w=w.lower()
-        try:
-            print (w,prondict[w])
-        except:
-            print(w)
-            continue结尾：如何获取文本数据？https://www.r-bloggers.com/text-mining-in-r-and-python-8-tips-to-get-started/
+    trump_senti.append(sent_senti.sentiment.polarity)
+
+file_obama = open('/Users/jasmine/Desktop/Python_Text_Mining/obama_twi.txt', 'r')
+obama_twi = file_obama.read()
+obama_sent = sent_tokenize(obama_twi)
+
+for sent in obama_sent:
+    sent_senti = TextBlob(sent)
+    obama_senti.append(sent_senti.sentiment.polarity)
+
+#print (trump_senti,obama_senti)
+# In[3]:
+
+
+### 可视化（与readability一起）
+
+7. nltk (corpus.cmudict.dict())corpus.cmudict.dict() 是CMU的一套用于NLTK的词典，收录了近13万多的单词含义、发音等信息。问题： 一首流行歌曲(Close to you)，那些句子的单词在结尾押韵？思维步骤：
+1.import nltk
+from nltk.tokenize import word_tokenize,sent_tokenize                               # Step 1 引入库
+prondict = nltk.corpus.cmudict.dict()                                               # Step 2 调用corpus.cmudict.dict()
+cty_file = open('/Users/jasmine/Desktop/Python_Text_Mining/close_to_you.txt', 'r')  # Step 3 读取文本
+cty_text = cty_file.read()
+cty_line = cty_text.split('\n')
+lines = []
+for line in cty_line:
+    words = word_tokenize(line)
+    for word in words:
+        if word.isalpha() ==False:
+            words.remove(word)
+    lines.append(words)
+for line in lines:
+    if not line:
+        lines.remove(line)
+
+for line in lines:
+    last_word = line[-1]
+    last_word=last_word.lower()
+    pro_last = prondict[last_word]
+    for p in reversed(pro_last[0]):
+        if len(p) ==3:
+            print(pro_last[0][pro_last[0].index(p):],last_word)
+            #print(pro_last[0].index(p),last_word)
+            break### 可视化结尾：如何获取文本数据？https://www.r-bloggers.com/text-mining-in-r-and-python-8-tips-to-get-started/
