@@ -2,33 +2,33 @@
 # coding: utf-8
 【python Text Mining】7个好玩实用的英文文本挖掘工具实例
 
-如何用计算机帮你计算：
+如何用计算机帮你：
 
-   一篇托福文章有多少个单词？
+   计算一篇托福文章有多少个单词
 
-   其中哪些词互为同义，哪些互为反义？
+   标出所有同义词、反义词
 
-   标出文章中所有的形容词（副词、连词什么的也行啦）？
-
-
-   一部《小王子》有多少个句子？
-
-   标出所有句子的主语、谓语？
+   标出所有的形容词（副词、连词什么的也行啦）
 
 
-   一篇Economist读起来难度如何？
+   计算一部《小王子》有多少个句子
 
-   一则川普推文的情感是积极还是消极de？
+   标出所有句子的主语、谓语
 
-   一首流行歌曲中，哪些歌词押韵？
+
+   计算一篇Economist读起来难度如何？
+
+   计算一则川普推文的情感是积极还是消极de？
+
+   标出一首流行歌曲中，哪些歌词押韵？
 
    ... ...
 
-作为一名在线英语学习设计师，我每天都要处理、统计、分析大量的陌生英文文本
+作为一名在线学习设计师，我每天都要处理、统计、分析大量的陌生英文文本
 
-从打开python的大门起，我就经常探索一些工具来辅助工作：
+从打开python的大门起，就经常探索一些工具来辅助工作：
 
-本文归纳了我用过的工具，如下：
+本文我归纳了用过的工具，如下：
 
 1. nltk(word_tokenize, sent_tokenize, corpus.cmudict, pos_tag)
 2. SpaCy
@@ -44,27 +44,59 @@ NLTK Book 地址：https://www.nltk.org/book/
 其中 word_tokenize 和 sent_tokenize 可以对文本分别进行以词、句为单位的切割。
 https://www.nltk.org/api/nltk.tokenize.html
 
-问题：比较两篇文章的长度（各自的句子数，各自句子长度）思维步骤：
+问题：比较两篇文章的长度（各自的句子数，各自句子长度）
+我们经常会接触到大量陌生的文本，不知道它们的长度如何。可以用nltk来计算两篇文本各自的句子数，以及每个句子的单词数。思维步骤：
 1. 引入库
 2. 调取文本
 3. 切割文本（以句子为单位）
 4. 计算文本的句子数
 5. 切割句子（以单词为单位）
-6. 计算句子的单词数# 代码演示
+6. 计算句子的单词数
+# In[1]:
+
+
+# 代码演示
 # Step 1 引入库
 import nltk
-from nltk.tokenize import word_tokenize,sent_tokenize# Step 2 调取文本 text_a, text_b
-file_a = open('/Users/jasmine/Desktop/Python_Text_Mining/text_a.txt', 'r')
+from nltk.tokenize import word_tokenize,sent_tokenize
+
+
+# In[2]:
+
+
+# Step 2 调取文本 text_a, text_b
+file_a = open('text_a.txt', 'r')
 text_a = file_a.read()
-file_b = open('/Users/jasmine/Desktop/Python_Text_Mining/text_b.txt', 'r')
+file_b = open('text_b.txt', 'r')
 text_b = file_b.read()
-#print (text_a)
-#print('---------------------')
-#print (text_b)# Step 3 切割文本（以句子为单位）
+
+
+# In[3]:
+
+
+#text_a
+
+
+# In[4]:
+
+
+# Step 3 切割文本（以句子为单位）
 # Step 4 计算文本的句子数
 text_a_sents = sent_tokenize(text_a)  # text_a_sents 包含文章的每个句子 （类型：list）
-print('Text_a contains',len(text_a_sents),'sentences.') # Text_a  包含的句子数text_b_sents = sent_tokenize(text_b)  # text_b_sents 包含文章的每个句子 （类型：list）
-print('Text_b contains',len(text_b_sents),'sentences.') # Text_b  包含的句子数# Step 5 切割句子（以单词为单位）
+print('Text_a contains',len(text_a_sents),'sentences.') # Text_a  包含的句子数
+
+
+# In[5]:
+
+
+text_b_sents = sent_tokenize(text_b)  # text_b_sents 包含文章的每个句子 （类型：list）
+print('Text_b contains',len(text_b_sents),'sentences.') # Text_b  包含的句子数
+
+
+# In[6]:
+
+
+# Step 5 切割句子（以单词为单位）
 # Step 6 计算句子的单词数
 text_a_count = []
 text_b_count = []
@@ -81,6 +113,11 @@ for sent in text_b_sents:
         if word.isalpha() == False:    # 如果该 word 不是字母（则是标点符号）
             words.remove(word)         # words 剔除该word
     text_b_count.append(len(words))
+
+
+# In[7]:
+
+
 ### 两篇文本长度可视化
 import numpy as np
 import pandas as pd # pandas
@@ -90,13 +127,51 @@ sentence_no = []
 for i in range(len(text_a_count)+1):
     if i != 0:
         sentence_no.append(i)
-wc = pd.DataFrame()
-wc['sentence_no'] = sentence_no
-wc['text_a_count'] = text_a_count
 for i in range(19):
     text_b_count.append(0)
-wc['text_b_count'] = text_b_count
-wc2. nltk(pos_tag)pos_tag 处理一系列的单词，返回单词的词性（part of speech）
+a_mean = sum(text_a_count)/len(text_a_count)
+b_mean = sum(text_b_count)/len(text_b_count)
+
+
+# In[8]:
+
+
+#from matplotlib.ticker import MaxNLocator
+#from collections import namedtuple
+
+plt.figure(figsize=(32,12))
+fig, ax = plt.subplots()
+index = np.arange(len(sentence_no))
+bar_width = 0.35
+opacity = 0.4
+error_config = {'ecolor': '0.3'}
+rects1 = ax.bar(index, text_a_count, bar_width,
+                alpha=opacity, color='b',
+                error_kw=error_config,
+                label='Text a')
+rects2 = ax.bar(index + bar_width, text_b_count, bar_width,
+                alpha=opacity, color='r',
+                 error_kw=error_config,
+                label='Text b')
+plt.hlines(a_mean,0,40,alpha=opacity-0.2, color='b',linestyle ='--')
+plt.hlines(b_mean,0,40,alpha=opacity-0.2, color='r',linestyle ='--')
+
+ax.set_xlabel('Sentence No.')
+ax.set_ylabel('Sentence Length (number of words)')
+ax.set_title('Text length between Text a & Text b')
+#ax.set_xticks(sentence_no)
+ax.legend()
+fig.tight_layout()
+plt.show()
+
+
+# In[9]:
+
+
+# Text a的句子数约是Text b的两倍
+# Text a的句子平均长度（单词数）高于Text b，分别约为17，11。
+
+2. nltk(pos_tag)pos_tag 处理一系列的单词，返回单词的词性（part of speech）
 https://www.nltk.org/book/ch05.html
 
 问题：如何标出文本中所有de形容词思维步骤：
@@ -108,7 +183,7 @@ https://www.nltk.org/book/ch05.html
 from nltk.tokenize import word_tokenize,sent_tokenize
 from nltk.corpus import wordnet
 
-file_adjs = open('/Users/jasmine/Desktop/Python_Text_Mining/text_adjs.txt', 'r')  # Step 2 调取文件
+file_adjs = open('text_adjs.txt', 'r')  # Step 2 调取文件
 text_adjs = file_adjs.read()
 
 text_adjs_word = word_tokenize(text_adjs)   # Step 3 切割文本 （以句、词为单位）
@@ -122,7 +197,7 @@ for sent in text_adjs_sent:          # Step 4 遍历每个句子中的单词，�
         if word[1] == 'JJ':          # Step 5 单词词性为“JJ”，放入list adjs 中。list of pos tags, see below:
             adjs.append(word[0])     # https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html
 
-# In[1]:
+# In[10]:
 
 
 ### 可视化 
@@ -154,46 +229,62 @@ https://spacy.io/
 4. 遍历每句，引入方法sentence.root import spacy
 from spacy.lang.en.examples import sentences                                      # Step 1 引入库
 nlp = spacy.load('en_core_web_sm')                                                # Step 2 加载 en_core_web_sm 模型
-file_adjs = open('/Users/jasmine/Desktop/Python_Text_Mining/text_adjs.txt', 'r')  # Step 3 调取文本
+file_adjs = open('text_adjs.txt', 'r')  # Step 3 调取文本
 text_adjs = file_adjs.read()
 doc = nlp(text_adjs)                                                              # Step 4 遍历每句，引入方法sentence.root 
 for sentence in doc.sents:
     print(sentence, sentence.root)### 可视化5. textstat# textstat 是一款简单好用的文本分析工具，我们可以调用flesch_reading_ease对阅读难易度（readability）分析 
-https://pypi.org/project/textstat/问题：特朗普和奥巴马的推文，谁的语言更简单？import nltk
+https://pypi.org/project/textstat/问题：特朗普和奥巴马的推文，谁的语言更简单？
+textstat中的flesch_reading_ease可以测算英语文章的难易程度
+拓展了解，请进：https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests
+# In[11]:
+
+
+import nltk
 from nltk.tokenize import word_tokenize,sent_tokenize
 from textstat.textstat import textstat
 
 trump_diff = []
 obama_diff = []
-file_trump = open('/Users/jasmine/Desktop/Python_Text_Mining/trump_twi.txt', 'r')
+file_trump = open('trump_twi.txt', 'r')
 trump_twi = file_trump.read()
 trump_sent = sent_tokenize(trump_twi)
 for sent in trump_sent:
     trump_diff.append(textstat.flesch_reading_ease(sent))
     
-file_obama = open('/Users/jasmine/Desktop/Python_Text_Mining/obama_twi.txt', 'r')
+file_obama = open('obama_twi.txt', 'r')
 obama_twi = file_obama.read()
 obama_sent = sent_tokenize(obama_twi)
 for sent in obama_sent:
     obama_diff.append(textstat.flesch_reading_ease(sent))
-    
+
+
+# In[12]:
+
+
+### 该部分可视化与下一个工具合并
+
 ### 可视化
 import numpy as np
 import pandas as pd # pandas
 import matplotlib.pyplot as plt # module for plotting 
 from matplotlib import gridspec
 
-twi = pd.DataFrame()
+#twi = pd.DataFrame()
 for i in range(3):
-    obama_diff.append('.')
-twi['trump_diff'] = trump_diff
-twi['obama_diff'] = obama_diff6. textblobtextblob建立在NLTK和Pattern基础之上，对于刚接触NLP的新手来说，非常友好。
+    obama_diff.append(None)
+#twi['trump_diff'] = trump_diff
+#twi['obama_diff'] = obama_diff6. textblobtextblob建立在NLTK和Pattern基础之上，对于刚接触NLP的新手来说，非常友好。
 可以做sentiment analysis, pos-tagging, noun phrase extraction
-https://textblob.readthedocs.io/en/dev/问题：对Trump和Obama的推文做情感分析import nltk
+https://textblob.readthedocs.io/en/dev/问题：对Trump和Obama的推文做情感分析
+# In[13]:
+
+
+import nltk
 from nltk.tokenize import word_tokenize,sent_tokenize
 from textblob import TextBlob
 
-file_trump = open('/Users/jasmine/Desktop/Python_Text_Mining/trump_twi.txt', 'r')
+file_trump = open('trump_twi.txt', 'r')
 trump_twi = file_trump.read()
 trump_sent = sent_tokenize(trump_twi)
 trump_senti = []
@@ -202,7 +293,7 @@ for sent in trump_sent:
     sent_senti = TextBlob(sent)
     trump_senti.append(sent_senti.sentiment.polarity)
 
-file_obama = open('/Users/jasmine/Desktop/Python_Text_Mining/obama_twi.txt', 'r')
+file_obama = open('obama_twi.txt', 'r')
 obama_twi = file_obama.read()
 obama_sent = sent_tokenize(obama_twi)
 
@@ -210,17 +301,49 @@ for sent in obama_sent:
     sent_senti = TextBlob(sent)
     obama_senti.append(sent_senti.sentiment.polarity)
 
-#print (trump_senti,obama_senti)### 可视化（与readability一起）
+#print (trump_senti,obama_senti)
+
+
+# In[14]:
+
+
+### 可视化
+import numpy as np
+import pandas as pd # pandas
+import matplotlib.pyplot as plt # module for plotting 
+from matplotlib import gridspec
+
+#twi = pd.DataFrame()
 for i in range(3):
-    obama_senti.append('.')
-twi['trump_senti'] = trump_senti
-twi['obama_senti'] = obama_senti7. nltk (corpus.cmudict.dict())corpus.cmudict.dict() 是CMU的一套用于NLTK的词典，收录了近13万多的单词含义、发音等信息。
+    obama_diff.append(None)
+    obama_senti.append(None)
+
+fig, ax = plt.subplots()
+ax.scatter(trump_senti,trump_diff, color = 'blue',alpha = .5)
+ax.scatter(obama_senti,obama_diff,color = 'red',alpha=0.5)
+plt.legend(['Trump Tweets','Obama Tweets'])
+ax.set_xlabel('Sentiment Level')
+ax.set_ylabel('Readability(the higher, the easier)')
+ax.set_title('Tweets of Trump and Obama')
+fig.tight_layout()
+plt.show()
+
+
+# In[ ]:
+
+
+# 从样本看出
+# Trump的tweet语言比Obama的较为极端（1.0,-0.6,-0.4均为蓝点）
+# 两人大多数的tweet都分布于0～0.6的范围（positive）
+# 两人tweet在语言的难度上，较为接近；Obama有两个位于40以下的红点（语言较难）
+
+7. nltk (corpus.cmudict.dict())corpus.cmudict.dict() 是CMU的一套用于NLTK的词典，收录了近13万多的单词含义、发音等信息。
 http://www.nltk.org/_modules/nltk/corpus/reader/cmudict.html问题： 一首流行歌曲(Close to you)，那些句子的单词在结尾押韵？思维步骤：
 1.import nltk
 from nltk.tokenize import word_tokenize,sent_tokenize    
 # Step 1 引入库
 prondict = nltk.corpus.cmudict.dict()                                               # Step 2 调用corpus.cmudict.dict()
-cty_file = open('/Users/jasmine/Desktop/Python_Text_Mining/close_to_you.txt', 'r')  # Step 3 读取文本
+cty_file = open('close_to_you.txt', 'r')  # Step 3 读取文本
 cty_text = cty_file.read()
 cty_line = cty_text.split('\n')
 lines = []
